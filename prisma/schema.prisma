@@ -1,0 +1,44 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String       @id @default(uuid())
+  email         String       @unique
+  name          String
+  hashPassword  String
+  solicitations Solitacion[]
+  createdAt     DateTime     @default(now())
+}
+
+model Solitacion {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  title       String
+  description String
+  category    Category
+  status      Status
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt // Removido o (now()) desnecessário
+}
+
+enum Category {
+  TI
+  TH
+  Sales // vendas e compras
+  Finance
+  Infra
+}
+
+enum Status {
+  Open
+  InProgress
+  Closed
+}
