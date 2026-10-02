@@ -23,3 +23,6 @@ O SQL garante restrições de chaves estrangeiras impedindo dados "orfões" nati
 Postgres é uma escolha muito forte por estar ligado a ferramentas de nuvem, estou criando o projeto visando já o deploy e o Neon me permite uma integração moderna, rápida e simples principalmente em projetos mais reduzidos como esse que podemos nos dar a liberdade de planos gratuitos.
 
 Já o prisma ganha por gerar tipos TypeScript o que reforça nossa ideia de evitar erros em tempo de compilação e escrita de código, junto a isso oferece uma Experiência bastante agradável de desenvolvimento com uma linguagem limpa e legível evitando verbosidade excessiva de decorators do TypeORM.
+
+# 3 - Usar zodvalidation em vez de classes para dto
+usando ZodValidarion para criar DTOs também criamos uma "Single Source of Truth", al;ém de validar como fariamos com decorator, tamvém criamos tipo TypeScript junto ao nascimento do schema, o que facilita a escrita e leitura do código e integração com o prisma e diminuindo erros com prisma, caso seja preciso também é muito fácil criar regras personalizadas.
