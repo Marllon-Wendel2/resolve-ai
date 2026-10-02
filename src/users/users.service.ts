@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { hashPassword } from 'src/common/utils/hash.util';
@@ -15,6 +19,7 @@ export class UsersService {
         data: {
           email: createUserDto.email,
           name: createUserDto.name,
+          username: createUserDto.userName,
           hashPassword: hashedPassword,
         },
         omit: { hashPassword: true },
@@ -26,13 +31,9 @@ export class UsersService {
 
   async findAllUsers() {
     try {
-      const users = await this.prismaService.user.findMany({
+      return await this.prismaService.user.findMany({
         omit: { hashPassword: true },
       });
-      if (users.length === 0) {
-        throw new InternalServerErrorException('Nenhum usuário encontrado');
-      }
-      return users;
     } catch (error) {
       handlePrismaError(error);
     }
@@ -45,7 +46,7 @@ export class UsersService {
         omit: { hashPassword: true },
       });
       if (!user) {
-        throw new InternalServerErrorException('Usuário não encontrado');
+        throw new NotFoundException('Usuário não encontrado.');
       }
       return user;
     } catch (error) {
@@ -56,13 +57,21 @@ export class UsersService {
   async updateUser(id: string, updateUserDto: UpdateUserDto) {
     try {
       if (updateUserDto.password) {
-        throw new InternalServerErrorException(
+        throw new BadRequestException(
           'Não é permitido atualizar a senha diretamente. Use o endpoint de alteração de senha.',
         );
       }
+
+      const { userName, email, name } = updateUserDto;
+
       const updatedUser = await this.prismaService.user.update({
         where: { id },
-        data: updateUserDto,
+        data: {
+          ...(email !== undefined && { email }),
+          ...(name !== undefined && { name }),
+          ...(userName !== undefined && { username: userName }),
+        },
+        omit: { hashPassword: true },
       });
       return updatedUser;
     } catch (error) {
@@ -74,6 +83,7 @@ export class UsersService {
     try {
       return await this.prismaService.user.delete({
         where: { id },
+        omit: { hashPassword: true },
       });
     } catch (error) {
       handlePrismaError(error);

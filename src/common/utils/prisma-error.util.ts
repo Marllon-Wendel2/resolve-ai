@@ -1,12 +1,30 @@
 import {
   ConflictException,
+  HttpException,
   NotFoundException,
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
 
-export function handlePrismaError(error: any): never {
-  if (error && typeof error.code === 'string') {
+interface PrismaKnownError {
+  code: string;
+  meta?: { target?: unknown };
+}
+
+function isPrismaKnownError(error: unknown): error is PrismaKnownError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    typeof (error as { code?: unknown }).code === 'string'
+  );
+}
+
+export function handlePrismaError(error: unknown): never {
+  if (error instanceof HttpException) {
+    throw error;
+  }
+
+  if (isPrismaKnownError(error)) {
     switch (error.code) {
       case 'P2002': {
         const target = error.meta?.target;
@@ -27,6 +45,7 @@ export function handlePrismaError(error: any): never {
         break;
     }
   }
+
   console.error('Erro desconhecido do Prisma:', error);
   throw new InternalServerErrorException(
     'Ocorreu um erro interno no servidor.',
