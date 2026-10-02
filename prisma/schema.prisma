@@ -46,7 +46,7 @@ model RefreshToken {
 enum Category {
   TI
   TH
-  Sales // vendas e compras
+  Sales
   Finance
   Infra
 }
