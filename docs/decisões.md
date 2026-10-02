@@ -25,4 +25,12 @@ Postgres é uma escolha muito forte por estar ligado a ferramentas de nuvem, est
 Já o prisma ganha por gerar tipos TypeScript o que reforça nossa ideia de evitar erros em tempo de compilação e escrita de código, junto a isso oferece uma Experiência bastante agradável de desenvolvimento com uma linguagem limpa e legível evitando verbosidade excessiva de decorators do TypeORM.
 
 # 3 - Usar zodvalidation em vez de classes para dto
-usando ZodValidarion para criar DTOs também criamos uma "Single Source of Truth", al;ém de validar como fariamos com decorator, tamvém criamos tipo TypeScript junto ao nascimento do schema, o que facilita a escrita e leitura do código e integração com o prisma e diminuindo erros com prisma, caso seja preciso também é muito fácil criar regras personalizadas.
+
+Usando ZodValidarion para criar DTOs também criamos uma "Single Source of Truth", al;ém de validar como fariamos com decorator, tamvém criamos tipo TypeScript junto ao nascimento do schema, o que facilita a escrita e leitura do código e integração com o prisma e diminuindo erros com prisma, caso seja preciso também é muito fácil criar regras personalizadas.
+
+
+# 4 Por quer usar a estrátegia de RefreshToken para login?
+
+O uso da estratégia combinada de Access Token e RefreshToken resolve o principal dilema de segurança e experiência do usuário, escolhendo o Refresh Token em vez de uma blacklist por ser um equilíbrio técnico ideal entre segurança e desempenho, permitindo salvar somente o refresh token no banco de dados e garantir um logout real na aplicação.
+
+Como o JWT é stateless e o servidor não mantém sessão ativa por padrão, usar apenas um token longo criaria um grande risco de segurança caso fosse interceptado, enquanto usar apenas um token curto tornaria a experiência de uso frustrante com logins constantes. A divisão resolve isso com elegância: o Access Token tem vida curta e roda rápido nas requisições do dia a dia sem pesar no servidor, enquanto o RefreshToken fica guardado de forma segura cuidando da renovação em segundo plano.
