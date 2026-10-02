@@ -9,12 +9,14 @@ datasource db {
 }
 
 model User {
-  id            String       @id @default(uuid())
-  email         String       @unique
+  id            String         @id @default(uuid())
+  email         String         @unique
   name          String
+  username      String         @unique
   hashPassword  String
   solicitations Solitacion[]
-  createdAt     DateTime     @default(now())
+  refreshTokens RefreshToken[]
+  createdAt     DateTime       @default(now())
 }
 
 model Solitacion {
@@ -26,7 +28,19 @@ model Solitacion {
   category    Category
   status      Status
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt // Removido o (now()) desnecessário
+  updatedAt   DateTime @updatedAt
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, revoked, expiresAt])
 }
 
 enum Category {

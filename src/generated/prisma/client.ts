@@ -49,3 +49,8 @@ export type User = Prisma.UserModel
  * 
  */
 export type Solitacion = Prisma.SolitacionModel
+/**
+ * Model RefreshToken
+ * 
+ */
+export type RefreshToken = Prisma.RefreshTokenModel
